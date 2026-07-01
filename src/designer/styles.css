@@ -1,0 +1,1289 @@
+/* ==========================================================================
+   QNN Designer — visual system
+   Refined professional aesthetic: hairline borders, layered surfaces,
+   blue (#1677FF) reserved for interactive / selected state.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --qnn-bg: #f7f8fa;
+  --qnn-surface: #ffffff;
+  --qnn-surface-muted: #f3f5f8;
+  --qnn-canvas-bg: #eef1f6;
+
+  /* Hairlines */
+  --qnn-hairline: #eceef3;
+  --qnn-border: #dfe3eb;
+  --qnn-border-strong: #c9cfdb;
+
+  /* Text */
+  --qnn-ink: #1a202c;
+  --qnn-ink-soft: #4a5568;
+  --qnn-ink-muted: #6b7280;
+
+  /* Accent */
+  --qnn-accent: #1677ff;
+  --qnn-accent-hover: #4096ff;
+  --qnn-accent-weak: rgba(22, 119, 255, 0.08);
+  --qnn-accent-border: rgba(22, 119, 255, 0.35);
+
+  /* Shadows */
+  --qnn-shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --qnn-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.04);
+  --qnn-shadow-md:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 6px 20px rgba(15, 23, 42, 0.06);
+  --qnn-shadow-lg:
+    0 2px 4px rgba(15, 23, 42, 0.04),
+    0 14px 40px rgba(15, 23, 42, 0.08);
+
+  /* Motion */
+  --qnn-ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --qnn-bg: #0f1419;
+  --qnn-surface: #1a1f2e;
+  --qnn-surface-muted: #242b3d;
+  --qnn-canvas-bg: #151a24;
+
+  /* Hairlines */
+  --qnn-hairline: #2a3142;
+  --qnn-border: #3a4256;
+  --qnn-border-strong: #4d5670;
+
+  /* Text */
+  --qnn-ink: #e6e9ef;
+  --qnn-ink-soft: #b4bac8;
+  --qnn-ink-muted: #8b92a3;
+
+  /* Accent — #1677FF family works in both modes; weak/border opacity bumped for dark */
+  --qnn-accent: #1677ff;
+  --qnn-accent-hover: #4096ff;
+  --qnn-accent-weak: rgba(22, 119, 255, 0.16);
+  --qnn-accent-border: rgba(22, 119, 255, 0.5);
+
+  /* Shadows — deeper alpha reads on near-black surfaces */
+  --qnn-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --qnn-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --qnn-shadow-md: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 20px rgba(0, 0, 0, 0.4);
+  --qnn-shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.35), 0 14px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* ==========================================================================
+   Top bar (brand wordmark + title input + action cluster)
+   ========================================================================== */
+
+.qnn-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  height: 56px;
+  flex: none;
+  background: var(--qnn-surface);
+  border-bottom: 1px solid var(--qnn-hairline);
+  box-shadow: var(--qnn-shadow-xs);
+  position: relative;
+  z-index: 2;
+}
+
+.qnn-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 16px;
+  margin-right: 4px;
+  border-right: 1px solid var(--qnn-hairline);
+  height: 36px;
+}
+
+.qnn-brand-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1677ff 0%, #0b5ed7 100%);
+  position: relative;
+  box-shadow:
+    inset 0 -2px 0 rgba(0, 0, 0, 0.12),
+    0 2px 6px rgba(22, 119, 255, 0.35);
+}
+
+.qnn-brand-mark::before,
+.qnn-brand-mark::after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 1px;
+}
+
+/* The mark: a stylised "Q" made from two angular strokes */
+.qnn-brand-mark::before {
+  top: 7px;
+  left: 7px;
+  width: 14px;
+  height: 2px;
+  transform: rotate(0deg);
+}
+
+.qnn-brand-mark::after {
+  top: 10px;
+  left: 12px;
+  width: 2px;
+  height: 12px;
+}
+
+.qnn-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.qnn-brand-name {
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  color: var(--qnn-ink);
+}
+
+.qnn-brand-sub {
+  font-size: 11px;
+  color: var(--qnn-ink-muted);
+  letter-spacing: 0.02em;
+}
+
+/* Title input in topbar — blends with background until focus */
+.qnn-topbar .qnn-title-input.ant-input {
+  border-color: transparent;
+  background: transparent;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--qnn-ink);
+  max-width: 360px;
+  padding-inline: 10px;
+  transition: background 0.15s var(--qnn-ease), border-color 0.15s var(--qnn-ease);
+}
+
+.qnn-topbar .qnn-title-input.ant-input:hover {
+  background: var(--qnn-surface-muted);
+}
+
+.qnn-topbar .qnn-title-input.ant-input:focus {
+  background: var(--qnn-surface);
+  border-color: var(--qnn-accent);
+  box-shadow: 0 0 0 2px var(--qnn-accent-weak);
+}
+
+/* ==========================================================================
+   Page tabs (underline-style indicator)
+   ========================================================================== */
+
+.qnn-pagetabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 20px;
+  height: 44px;
+  flex: none;
+  background: var(--qnn-surface);
+  border-bottom: 1px solid var(--qnn-hairline);
+  overflow-x: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.qnn-pagetab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  height: 44px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--qnn-ink-soft);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s var(--qnn-ease), border-color 0.15s var(--qnn-ease);
+  white-space: nowrap;
+}
+
+.qnn-pagetab:hover {
+  color: var(--qnn-ink);
+}
+
+.qnn-pagetab.qnn-active {
+  color: var(--qnn-accent);
+  border-bottom-color: var(--qnn-accent);
+}
+
+.qnn-pagetab-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  color: var(--qnn-ink-muted);
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.6;
+  transition: background 0.12s var(--qnn-ease), opacity 0.12s var(--qnn-ease);
+}
+
+.qnn-pagetab-close:hover {
+  opacity: 1;
+  background: var(--qnn-surface-muted);
+  color: var(--qnn-ink);
+}
+
+.qnn-pagetab-drag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 18px;
+  border-radius: 4px;
+  color: var(--qnn-ink-muted);
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0;
+  cursor: grab;
+  transition: opacity 0.12s var(--qnn-ease), color 0.12s var(--qnn-ease);
+  touch-action: none;
+}
+
+.qnn-pagetab:hover .qnn-pagetab-drag,
+.qnn-pagetab.qnn-active .qnn-pagetab-drag,
+.qnn-pagetab-drag:focus-visible {
+  opacity: 0.75;
+}
+
+.qnn-pagetab-drag:hover {
+  opacity: 1;
+  color: var(--qnn-ink);
+}
+
+.qnn-pagetab-drag:active {
+  cursor: grabbing;
+}
+
+.qnn-pagetab.qnn-dragging {
+  z-index: 2;
+}
+
+.qnn-pagetab-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  color: var(--qnn-ink-muted);
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0;
+  cursor: pointer;
+  transition: background 0.12s var(--qnn-ease), opacity 0.12s var(--qnn-ease), color 0.12s var(--qnn-ease);
+}
+
+.qnn-pagetab:hover .qnn-pagetab-edit,
+.qnn-pagetab.qnn-active .qnn-pagetab-edit,
+.qnn-pagetab-edit:focus-visible {
+  opacity: 0.75;
+}
+
+.qnn-pagetab-edit:hover {
+  opacity: 1;
+  background: var(--qnn-surface-muted);
+  color: var(--qnn-ink);
+}
+
+.qnn-pagetabs .qnn-addpage {
+  margin-left: 8px;
+}
+
+/* ==========================================================================
+   Shell — 3-pane layout
+   ========================================================================== */
+
+.qnn-shell {
+  display: grid;
+  grid-template-columns: 238px 1fr 344px;
+  flex: 1;
+  min-height: 0;
+  background: var(--qnn-bg);
+}
+
+/* Collapsed grid states */
+.qnn-shell[data-left-collapsed]  { grid-template-columns: 44px 1fr 344px; }
+.qnn-shell[data-right-collapsed] { grid-template-columns: 238px 1fr 44px; }
+.qnn-shell[data-left-collapsed][data-right-collapsed] {
+  grid-template-columns: 44px 1fr 44px;
+}
+
+/* Remove default pane padding when a pane is collapsed; the rail handles its own spacing. */
+.qnn-shell[data-left-collapsed]  > aside.qnn-left  { padding: 0; }
+.qnn-shell[data-right-collapsed] > aside.qnn-right { padding: 0; }
+
+.qnn-shell > aside,
+.qnn-shell > main {
+  min-height: 0;
+  overflow: auto;
+}
+
+.qnn-shell > aside.qnn-left {
+  background: var(--qnn-surface);
+  border-right: 1px solid var(--qnn-hairline);
+  padding: 20px 16px;
+}
+
+.qnn-shell > aside.qnn-right {
+  background: var(--qnn-surface);
+  border-left: 1px solid var(--qnn-hairline);
+  padding: 20px 16px;
+}
+
+.qnn-shell > main {
+  padding: 28px 32px;
+  background: var(--qnn-canvas-bg);
+}
+
+/* Custom thin scrollbars in side panes and canvas */
+.qnn-shell > aside::-webkit-scrollbar,
+.qnn-shell > main::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.qnn-shell > aside::-webkit-scrollbar-track,
+.qnn-shell > main::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.qnn-shell > aside::-webkit-scrollbar-thumb,
+.qnn-shell > main::-webkit-scrollbar-thumb {
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-clip: padding-box;
+}
+
+.qnn-shell > aside:hover::-webkit-scrollbar-thumb,
+.qnn-shell > main:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(15, 23, 42, 0.2);
+  background-clip: padding-box;
+}
+
+/* ==========================================================================
+   Palette (left pane)
+   ========================================================================== */
+
+.qnn-palette-group {
+  margin-bottom: 28px;
+}
+
+/* Subtle hairline divider above every group except the first; extra
+   vertical padding gives each group breathing room. */
+.qnn-palette-group + .qnn-palette-group {
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--qnn-hairline);
+}
+
+.qnn-palette-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--qnn-ink-muted);
+}
+
+.qnn-palette-heading::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--qnn-hairline);
+}
+
+.qnn-palette-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--qnn-hairline);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  background: var(--qnn-surface);
+  color: var(--qnn-ink);
+  cursor: grab;
+  font-size: 13px;
+  font-weight: 500;
+  /* dnd-kit PointerSensor: opt out of browser pan/zoom and text-select so
+     pointer events stay owned by the drag, including on touch/stylus. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    border-color 0.12s var(--qnn-ease),
+    box-shadow 0.12s var(--qnn-ease),
+    transform 0.12s var(--qnn-ease),
+    background 0.12s var(--qnn-ease);
+}
+
+.qnn-palette-item:hover {
+  border-color: var(--qnn-accent-border);
+  background: var(--qnn-surface);
+  box-shadow: var(--qnn-shadow-sm), 0 0 0 3px var(--qnn-accent-weak);
+  transform: translateY(-1px);
+}
+
+.qnn-palette-item:active {
+  cursor: grabbing;
+  transform: translateY(0);
+}
+
+.qnn-palette-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--qnn-surface-muted);
+  color: var(--qnn-accent);
+  font-size: 15px;
+  flex: none;
+}
+
+/* Flex column pinned to the aside's full height; the groups area scrolls
+   internally so the trash zone is always visible at the bottom. */
+.qnn-palette-pane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+}
+
+.qnn-palette-groups {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  /* Slim scrollbar so it doesn't visually compete with the group dividers. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--qnn-border-strong) transparent;
+}
+
+.qnn-palette-groups::-webkit-scrollbar,
+.qnn-pane-rail-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.qnn-palette-groups::-webkit-scrollbar-track,
+.qnn-pane-rail-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.qnn-palette-groups::-webkit-scrollbar-thumb,
+.qnn-pane-rail-scroll::-webkit-scrollbar-thumb {
+  background: var(--qnn-border-strong);
+  border-radius: 3px;
+}
+
+.qnn-palette-groups::-webkit-scrollbar-thumb:hover,
+.qnn-pane-rail-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--qnn-ink-muted);
+}
+
+/* Thin horizontal scroller for matrix tables that overflow the cell. */
+.qnn-matrix-wrap {
+  scrollbar-width: thin;
+  scrollbar-color: var(--qnn-border-strong) transparent;
+}
+
+.qnn-matrix-wrap::-webkit-scrollbar {
+  height: 6px;
+}
+
+.qnn-matrix-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.qnn-matrix-wrap::-webkit-scrollbar-thumb {
+  background: var(--qnn-border-strong);
+  border-radius: 3px;
+}
+
+.qnn-matrix-wrap::-webkit-scrollbar-thumb:hover {
+  background: var(--qnn-ink-muted);
+}
+
+.qnn-palette-trash {
+  flex: 0 0 auto;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 12px;
+  border: 1px dashed var(--qnn-hairline);
+  border-radius: 10px;
+  color: var(--qnn-ink-muted);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    border-color 0.12s var(--qnn-ease),
+    background 0.12s var(--qnn-ease),
+    color 0.12s var(--qnn-ease);
+}
+
+.qnn-palette-trash.qnn-dropactive {
+  border-style: solid;
+  border-color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+}
+
+.qnn-palette-trash-icon {
+  font-size: 18px;
+}
+
+/* ==========================================================================
+   Canvas (the document)
+   ========================================================================== */
+
+.qnn-canvas {
+  max-width: 960px;
+  margin: 0 auto;
+  background: var(--qnn-surface);
+  border: 1px solid var(--qnn-hairline);
+  border-radius: 12px;
+  padding: 28px 32px;
+  min-height: 560px;
+  box-shadow: var(--qnn-shadow-md);
+  position: relative;
+  transition:
+    border-color 0.15s var(--qnn-ease),
+    box-shadow 0.15s var(--qnn-ease);
+}
+
+/* While any drag is in flight, frame the canvas as the drop target so the
+   user has an obvious landing zone. Row-gap + cell outlines indicate the
+   precise insertion point; this is the coarse "here is where things go" cue. */
+.qnn-canvas.qnn-drop-active {
+  border-color: var(--qnn-accent-border);
+  box-shadow:
+    0 0 0 3px var(--qnn-accent-weak),
+    var(--qnn-shadow-md);
+}
+
+.qnn-canvas::before {
+  /* subtle top-edge highlight to sell the "page" metaphor */
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(22, 119, 255, 0.12),
+    transparent
+  );
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+.qnn-row {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px;
+  padding: 6px 0;
+  border-radius: 6px;
+}
+
+.qnn-row-gap {
+  height: 8px;
+  margin: 2px 0;
+  border-radius: 4px;
+  transition: height 0.15s var(--qnn-ease), background 0.15s var(--qnn-ease);
+}
+
+/* During any canvas drag, inflate every gap so they become easy pointer
+   targets before the user is exactly on top of one. Without this the gap is
+   only 8px tall, and the browser almost always routes the pointer to a
+   neighbouring row/cell instead — making "insert between rows" feel flaky. */
+.qnn-canvas.qnn-drop-active .qnn-row-gap {
+  height: 20px;
+  background: color-mix(in srgb, var(--qnn-accent-weak) 40%, transparent);
+}
+
+.qnn-row-gap.qnn-dropactive,
+.qnn-canvas.qnn-drop-active .qnn-row-gap.qnn-dropactive {
+  height: 32px;
+  background: var(--qnn-accent-weak);
+  outline: 1px dashed var(--qnn-accent-border);
+  outline-offset: -2px;
+}
+
+/* ==========================================================================
+   Cell (a single control on the canvas)
+   ========================================================================== */
+
+.qnn-cell {
+  grid-column: span var(--span, 12);
+  /* Grid items default to min-width: auto (content-sized), which stops
+     inner `overflow-x: auto` containers — e.g. the matrix scroller — from
+     ever scrolling because the cell just grows to fit its content. */
+  min-width: 0;
+  background: var(--qnn-surface);
+  border: 1px solid var(--qnn-border-strong);
+  border-radius: 8px;
+  /* Leave room on the left for the drag handle. */
+  padding: 10px 12px 10px 30px;
+  position: relative;
+  transition:
+    border-color 0.12s var(--qnn-ease),
+    background 0.12s var(--qnn-ease),
+    box-shadow 0.15s var(--qnn-ease),
+    opacity 0.12s var(--qnn-ease);
+}
+
+.qnn-cell.qnn-dragging {
+  opacity: 0.5;
+}
+
+/* Drag handle on the left edge of each cell. Only this element is the drag
+   source — the cell body stays clickable for selection. touch-action + user-select
+   are scoped here (not the whole cell) so AntD inputs/labels inside the cell
+   keep their native interaction. */
+.qnn-cell-handle {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  bottom: 2px;
+  width: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  color: var(--qnn-ink-muted);
+  cursor: grab;
+  opacity: 0.35;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    opacity 0.12s var(--qnn-ease),
+    background 0.12s var(--qnn-ease),
+    color 0.12s var(--qnn-ease);
+}
+
+.qnn-cell:hover .qnn-cell-handle,
+.qnn-cell.qnn-selected .qnn-cell-handle {
+  opacity: 1;
+}
+
+.qnn-cell-handle:hover {
+  background: var(--qnn-surface-muted);
+  color: var(--qnn-ink);
+}
+
+.qnn-cell-handle:active {
+  cursor: grabbing;
+  background: var(--qnn-accent-weak);
+  color: var(--qnn-accent);
+}
+
+.qnn-cell-handle:focus-visible {
+  outline: 2px solid var(--qnn-accent);
+  outline-offset: 1px;
+}
+
+/* Quick-remove button mirrors the drag handle on the right edge so the user
+   can delete a control without dragging it to the trash. Hidden until the
+   cell is hovered or selected to keep the canvas tidy. */
+.qnn-cell-delete {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  color: var(--qnn-ink-muted);
+  cursor: pointer;
+  opacity: 0;
+  z-index: 3;
+  transition:
+    opacity 0.12s var(--qnn-ease),
+    background 0.12s var(--qnn-ease),
+    color 0.12s var(--qnn-ease);
+}
+
+.qnn-cell:hover .qnn-cell-delete,
+.qnn-cell.qnn-selected .qnn-cell-delete,
+.qnn-cell-delete:focus-visible {
+  opacity: 1;
+}
+
+.qnn-cell-delete:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.qnn-cell-delete:focus-visible {
+  outline: 2px solid #dc2626;
+  outline-offset: 1px;
+}
+
+.qnn-cell:hover {
+  border-color: var(--qnn-accent);
+}
+
+.qnn-cell.qnn-selected {
+  background: var(--qnn-surface);
+  border-color: var(--qnn-accent);
+  box-shadow:
+    0 0 0 3px var(--qnn-accent-weak),
+    var(--qnn-shadow-sm);
+}
+
+.qnn-cell.qnn-hover {
+  border-color: var(--qnn-accent-border);
+}
+
+/* Vertical "insert-before" indicator shown on the left edge of a cell while
+   a drag is hovering over that cell (the cell's own droppable inserts the new
+   control *before* this one). */
+.qnn-cell.qnn-hover::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--qnn-accent);
+  box-shadow: 0 0 0 2px var(--qnn-accent-weak);
+  pointer-events: none;
+}
+
+/* Edge drop zones on a cell — the "after last cell" zone makes it possible to
+   drop a new control at the end of a row (side-by-side with what's there).
+   Pointer-events only engage during an active canvas drag so normal cell
+   interaction (click-to-select, drag handle) isn't blocked. */
+.qnn-cell-edge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.qnn-canvas.qnn-drop-active .qnn-cell-edge {
+  pointer-events: auto;
+}
+
+.qnn-cell-edge-after {
+  right: -10px;
+}
+
+.qnn-cell-edge-before {
+  left: -10px;
+}
+
+.qnn-cell-edge.qnn-dropactive::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--qnn-accent);
+  box-shadow: 0 0 0 2px var(--qnn-accent-weak);
+}
+
+.qnn-cell-edge-after.qnn-dropactive::after {
+  right: 6px;
+}
+
+.qnn-cell-edge-before.qnn-dropactive::after {
+  left: 6px;
+}
+
+.qnn-cell-resize {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  width: 6px;
+  height: 100%;
+  cursor: ew-resize;
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.12s var(--qnn-ease);
+}
+
+.qnn-cell-resize:hover,
+.qnn-cell-resize.qnn-active {
+  background: var(--qnn-accent);
+}
+
+/* ==========================================================================
+   Right properties pane — polish for pane headings
+   ========================================================================== */
+
+.qnn-pane-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--qnn-ink-muted);
+  margin: 0;
+  padding: 0 4px;
+}
+
+/* ==========================================================================
+   Collapsible pane rails (shown when a pane is collapsed)
+   ========================================================================== */
+
+.qnn-pane-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 0;
+  height: 100%;
+  /* The expand button (first child) and trash (last child) stay pinned to
+     the top and bottom. Only the middle section scrolls. */
+  overflow: hidden;
+  min-height: 100%;
+}
+
+.qnn-pane-rail-trash {
+  margin-top: auto;
+  flex-shrink: 0;
+  border: 1px dashed var(--qnn-hairline);
+  color: var(--qnn-ink-muted);
+}
+
+/* Scrollable middle section of the collapsed palette rail so the expand
+   button (top) and trash (bottom) stay pinned regardless of plugin count. */
+.qnn-pane-rail-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: var(--qnn-border-strong) transparent;
+}
+
+/* Collapsed palette rail — group its buttons and draw a thin separator
+   between groups so the visual grouping mirrors the expanded palette. */
+.qnn-pane-rail-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.qnn-pane-rail-sep {
+  width: 20px;
+  height: 1px;
+  background: var(--qnn-hairline);
+  margin: 14px 0;
+}
+
+.qnn-pane-rail-btn.qnn-pane-rail-trash.qnn-dropactive,
+.qnn-pane-rail-btn.qnn-pane-rail-trash.qnn-dropactive:hover {
+  border-style: solid;
+  border-color: #dc2626;
+  background: #dc2626;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.35);
+  transition: background 0.12s var(--qnn-ease), color 0.12s var(--qnn-ease),
+              box-shadow 0.12s var(--qnn-ease);
+}
+
+.qnn-pane-rail-btn.qnn-pane-rail-trash.qnn-dropactive .anticon {
+  animation: qnn-trash-shake 0.35s var(--qnn-ease) infinite alternate;
+}
+
+@keyframes qnn-trash-shake {
+  from { transform: rotate(-6deg); }
+  to   { transform: rotate(6deg); }
+}
+
+.qnn-pane-rail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--qnn-ink-muted);
+  cursor: pointer;
+  transition:
+    background 0.12s var(--qnn-ease),
+    border-color 0.12s var(--qnn-ease),
+    color 0.12s var(--qnn-ease);
+}
+
+.qnn-pane-rail-btn:hover {
+  background: var(--qnn-surface-muted);
+  border-color: var(--qnn-hairline);
+  color: var(--qnn-accent);
+}
+
+.qnn-pane-rail-btn:focus-visible {
+  outline: 2px solid var(--qnn-accent);
+  outline-offset: 1px;
+}
+
+/* Mirror an icon horizontally — used on the right (Inspector) pane so the
+   MenuFold/MenuUnfold sidebar graphic sits against that pane's own edge. */
+.qnn-icon-flip {
+  transform: scaleX(-1);
+}
+
+/* ==========================================================================
+   Preview / runtime — each question rendered as a card with breathing room.
+   Consumed by QuestionnaireRenderer. Tokens switch in dark mode automatically.
+   ========================================================================== */
+
+.qnn-preview-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.qnn-preview-row {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px;
+}
+
+.qnn-preview-field {
+  background: var(--qnn-surface);
+  border: 1px solid var(--qnn-border-strong);
+  border-radius: 10px;
+  padding: 16px 20px;
+  transition:
+    border-color 0.15s var(--qnn-ease),
+    box-shadow 0.15s var(--qnn-ease),
+    background 0.15s var(--qnn-ease);
+}
+
+.qnn-preview-field:hover {
+  border-color: var(--qnn-accent);
+  box-shadow: var(--qnn-shadow-xs);
+}
+
+.qnn-preview-field:focus-within {
+  border-color: var(--qnn-accent-border);
+  box-shadow: 0 0 0 3px var(--qnn-accent-weak);
+}
+
+/* The Form.Item inside a field owns its own bottom margin by default; flatten
+   it so the card's own padding does the spacing. */
+.qnn-preview-field .ant-form-item {
+  margin-bottom: 0;
+}
+
+/* ==========================================================================
+   User-defined radio / checkbox size
+   Consumes --qnn-choice-size (px) set inline on the wrapping element.
+   AntD's default inner square/circle is 16px; we rescale the glyph and its
+   checked/filled indicator so the whole thing stays proportional.
+   ========================================================================== */
+
+.qnn-choice-sized .ant-radio-inner,
+.qnn-choice-sized .ant-checkbox-inner {
+  inline-size: var(--qnn-choice-size);
+  block-size: var(--qnn-choice-size);
+}
+
+/* Radio: the filled dot inherits AntD's scale(0.375) transform — we just need
+   the ::after box to match the new outer so the centering math stays valid. */
+.qnn-choice-sized .ant-radio-inner::after {
+  inline-size: var(--qnn-choice-size);
+  block-size: var(--qnn-choice-size);
+  margin-block-start: calc(var(--qnn-choice-size) / -2);
+  margin-inline-start: calc(var(--qnn-choice-size) / -2);
+}
+
+/* Checkbox: the tick is sized by AntD via a 14px baseline; scale it linearly. */
+.qnn-choice-sized .ant-checkbox-inner::after {
+  inline-size: calc(var(--qnn-choice-size) * 5.71429 / 14);
+  block-size: calc(var(--qnn-choice-size) * 9.14286 / 14);
+}
+
+/* ==========================================================================
+   Arithmetic control — builder tree and runtime value
+   Used by the `arithmetic` plugin PropertyEditor + Renderer.
+   ========================================================================== */
+
+.qnn-arith-group {
+  border-left: 2px solid var(--qnn-accent-border);
+  padding: 6px 0 6px 12px;
+  margin-block: 6px;
+  border-radius: 4px;
+}
+
+.qnn-arith-children {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.qnn-arith-leaf {
+  padding: 4px 0;
+}
+
+.qnn-arith-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--qnn-ink);
+  line-height: 1.2;
+  margin-top: 4px;
+}
+
+.qnn-arith-placeholder {
+  color: var(--qnn-ink-muted);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* Native <select> in the ArithmeticBuilder (kind + operator selectors).
+   The component uses native selects instead of AntD's Select because
+   @testing-library/react's fireEvent.change only works against native
+   form controls. Style them to match AntD's small-size outlined look so
+   they blend with the surrounding AntD controls in both themes. */
+.qnn-arith-native-select {
+  height: 24px;
+  padding: 0 11px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--qnn-ink);
+  background: var(--qnn-surface);
+  border: 1px solid var(--qnn-border);
+  border-radius: 6px;
+  transition:
+    border-color 0.12s var(--qnn-ease),
+    box-shadow 0.12s var(--qnn-ease);
+}
+
+.qnn-arith-native-select:hover {
+  border-color: var(--qnn-accent);
+}
+
+.qnn-arith-native-select:focus {
+  outline: none;
+  border-color: var(--qnn-accent);
+  box-shadow: 0 0 0 2px var(--qnn-accent-weak);
+}
+
+.qnn-inspector-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--qnn-ink-muted);
+  background: transparent;
+}
+
+.qnn-inspector-dot[data-selected] {
+  background: var(--qnn-accent);
+  border-color: var(--qnn-accent);
+}
+
+/* Pane title row (title + inline collapse chevron) */
+.qnn-pane-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 4px;
+  margin-bottom: 12px;
+}
+
+.qnn-pane-title-row .qnn-pane-title {
+  margin: 0;
+}
+
+.qnn-pane-collapse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--qnn-ink-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.12s var(--qnn-ease),
+    color 0.12s var(--qnn-ease);
+}
+
+.qnn-pane-collapse-btn:hover {
+  background: var(--qnn-surface-muted);
+  color: var(--qnn-ink);
+}
+
+.qnn-pane-collapse-btn:focus-visible {
+  outline: 2px solid var(--qnn-accent);
+  outline-offset: 1px;
+}
+
+/* ==========================================================================
+   Responsive — stack on narrow
+   ========================================================================== */
+
+@media (max-width: 960px) {
+  .qnn-shell,
+  .qnn-shell[data-left-collapsed],
+  .qnn-shell[data-right-collapsed],
+  .qnn-shell[data-left-collapsed][data-right-collapsed] {
+    grid-template-columns: 1fr;
+  }
+  .qnn-shell > aside.qnn-left,
+  .qnn-shell > aside.qnn-right {
+    border: none;
+    border-bottom: 1px solid var(--qnn-hairline);
+  }
+  .qnn-pane-rail,
+  .qnn-pane-collapse-btn {
+    display: none;
+  }
+  /* Restore default padding on collapsed asides in stacked layout. */
+  .qnn-shell[data-left-collapsed]  > aside.qnn-left,
+  .qnn-shell[data-right-collapsed] > aside.qnn-right {
+    padding: 20px 16px;
+  }
+}
+
+/* On narrow phones the top bar would overflow and push Preview/Export
+   off-screen. Tighten it: drop the brand subline, shrink the title input,
+   and collapse action buttons to icon-only. aria-label on each button keeps
+   them accessible without the visible text. */
+@media (max-width: 640px) {
+  .qnn-topbar {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .qnn-brand {
+    padding-right: 8px;
+    margin-right: 0;
+  }
+  .qnn-brand-text {
+    display: none;
+  }
+  .qnn-topbar .qnn-title-input.ant-input {
+    max-width: none;
+    min-width: 0;
+    font-size: 14px;
+    padding-inline: 6px;
+  }
+  /* Hide the text span inside action buttons, keep the icon. */
+  .qnn-topbar .ant-btn[data-testid="topbar-import"] > span:not(.anticon),
+  .qnn-topbar .ant-btn[data-testid="topbar-export"] > span:not(.anticon),
+  .qnn-topbar .ant-btn[data-testid="topbar-preview"] > span:not(.anticon) {
+    display: none;
+  }
+  .qnn-topbar .ant-btn[data-testid="topbar-import"],
+  .qnn-topbar .ant-btn[data-testid="topbar-export"],
+  .qnn-topbar .ant-btn[data-testid="topbar-preview"] {
+    padding-inline: 10px;
+  }
+}
+
+/* ==========================================================================
+   HTML text control — WYSIWYG editor & canvas preview
+   ========================================================================== */
+.qnn-wysiwyg {
+  border: 1px solid var(--qnn-border);
+  border-radius: 6px;
+  background: var(--qnn-surface);
+  overflow: hidden;
+}
+.qnn-wysiwyg-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--qnn-hairline);
+  background: var(--qnn-surface-muted);
+}
+.qnn-wysiwyg-surface {
+  min-height: 180px;
+  max-height: 360px;
+  overflow: auto;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--qnn-ink);
+  outline: none;
+}
+.qnn-wysiwyg-surface:focus {
+  box-shadow: inset 0 0 0 2px var(--qnn-accent-border);
+}
+.qnn-wysiwyg-surface > :first-child { margin-top: 0; }
+.qnn-wysiwyg-surface > :last-child { margin-bottom: 0; }
+.qnn-wysiwyg-surface blockquote {
+  border-left: 3px solid var(--qnn-border-strong);
+  margin: 8px 0;
+  padding: 2px 12px;
+  color: var(--qnn-ink-soft);
+}
+.qnn-wysiwyg-surface pre {
+  background: var(--qnn-surface-muted);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  overflow: auto;
+}
+
+.qnn-html-preview {
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+.qnn-html-preview > :first-child { margin-top: 0; }
+.qnn-html-preview > :last-child { margin-bottom: 0; }
+
